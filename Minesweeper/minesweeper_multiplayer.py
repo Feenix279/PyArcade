@@ -12,7 +12,6 @@ def mqtt_init ():
     client.on_message = on_message
     client.on_disconnect = on_disconnect
 
-
     #connect
     client.connect("test.mosquitto.org", 1883, 60)
     client.loop_start()

@@ -83,8 +83,8 @@ def start_window():
     
     mainframe.pack()
 
-    if multiplayer:
-        create_grid()
+    if not multiplayer:
+        root.mainloop()
 
     #root.mainloop()
     
