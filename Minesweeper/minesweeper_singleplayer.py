@@ -5,6 +5,7 @@ import random
 ishost = False
 multiplayer = False
 
+start = False
 given_bombs =[]
 given_column_count = 0
 given_row_count = 0
@@ -98,6 +99,7 @@ def create_grid():
     global unsolved_squares
     global bombs
     global gridsize
+    global start
     
     try:
         for r in squares:
@@ -180,7 +182,7 @@ def create_grid():
                     unsolved_squares.append(c)
             else:
                 c.set_color("#ff4d4d")
-                          
+    start = True            
 def get_is_bomb(x,y):
     
     if x >= 0 and x <= column_count-1 and y >= 0 and y <= row_count-1:

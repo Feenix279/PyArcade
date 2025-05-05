@@ -1,6 +1,7 @@
 import paho.mqtt.client as mqtt
 import tkinter as tk
 import minesweeper_singleplayer as ms
+import time
 
 ishost = False
 
@@ -41,6 +42,8 @@ def start_connect_window():
             ms.ishost = True
             
             ms.start_window()
+            while not ms.start:
+                time.sleep(.1)
             msg_topublish = f"{ms.gridsize};"
             for b in ms.bombs:
                 coords = f"{str(b[0])},{str(b[1])}"
