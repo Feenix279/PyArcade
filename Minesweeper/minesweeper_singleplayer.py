@@ -9,6 +9,7 @@ start = False
 given_bombs =[]
 given_column_count = 0
 given_row_count = 0
+last_square_pressed = None
 
 
 class square():
@@ -19,13 +20,18 @@ class square():
         self.x = x
         self.y = y
         
-    def was_pressed(self):
+    def was_pressed(self, remote = False):
+        global last_square_pressed
+        
+        if not remote:
+            last_square_pressed = self
+        
         if self.isbomb:
             end()
         else:
+            print("Lösche Square")
             self.button.config(text=str(self.bombcount), borderwidth=0, state="disabled")
             unsolved_squares.remove(self)
-            self.button.config(state="disabled")
             if not unsolved_squares:
                 end(True)
                 
@@ -53,6 +59,7 @@ def start_window():
     global resultlabel
     global size_input
     global bomb_input
+    global start_button
     
     root = tk.Tk()
     root.config(bg="#3A4244")
@@ -116,8 +123,8 @@ def create_grid():
     gridsize = f"{column_count}x{row_count}"
     
     if given_row_count and given_column_count:
-        row_count = given_row_count
-        column_count = given_column_count
+        row_count = int(given_row_count)
+        column_count = int(given_column_count)
         
     if not row_count % 2 == 0 or not column_count % 2 == 0:
         return
@@ -138,6 +145,7 @@ def create_grid():
     
     bombs = []
     bombs_placed = 0
+    unsolved_squares = []
     if ishost or not multiplayer:
         while bombs_placed < bomb_count:
             x = random.randint(0, column_count-1)
@@ -147,7 +155,7 @@ def create_grid():
                 bombs.append([x,y])
                 squares[y][x].isbomb = True
                 bombs_placed += 1
-        unsolved_squares = []
+        
     else:
         for b in given_bombs:
             x = b[0]
@@ -183,10 +191,11 @@ def create_grid():
                     c.button.config(borderwidth=0, state="disabled")
                 else:
                     unsolved_squares.append(c)
+                    
             else:
                 c.set_color("#ff4d4d")
     start = True
-             
+    print(f"Feld erstellt! Anzahl ungelöster Felder: {len(unsolved_squares)}")  
 def get_is_bomb(x,y):
     
     if x >= 0 and x <= column_count-1 and y >= 0 and y <= row_count-1:
