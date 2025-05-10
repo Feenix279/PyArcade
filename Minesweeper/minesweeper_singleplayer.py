@@ -28,6 +28,7 @@ class square():
             self.button.config(state="disabled")
             if not unsolved_squares:
                 end(True)
+                
     def reveal(self):
         self.button.config(state="disabled")
         
@@ -35,6 +36,7 @@ class square():
             self.button.config(text = "B")
         else:
             self.button.config(text = str(self.bombcount))
+            
     def set_color(self, overwrite = False):
         colors = ["#cccccc", "#ff6666", "#ffcc99", "#ccff99", "#99ffee",  "#99bbff", "#cc99ff", "#ff99dd", "#000"]
         self.button.config(fg=colors[self.bombcount], disabledforeground=colors[self.bombcount])
@@ -45,6 +47,7 @@ class square():
         
         
 def start_window():
+    
     global root
     global mainframe
     global resultlabel
@@ -83,7 +86,7 @@ def start_window():
     #hori_scroll.pack(side="bottom", fill="x")    
     
     mainframe.pack()
-
+    
     if not multiplayer:
         root.mainloop()
 
@@ -182,7 +185,8 @@ def create_grid():
                     unsolved_squares.append(c)
             else:
                 c.set_color("#ff4d4d")
-    start = True            
+    start = True
+             
 def get_is_bomb(x,y):
     
     if x >= 0 and x <= column_count-1 and y >= 0 and y <= row_count-1:

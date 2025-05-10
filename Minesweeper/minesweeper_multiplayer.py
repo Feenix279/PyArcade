@@ -2,6 +2,8 @@ import paho.mqtt.client as mqtt
 import tkinter as tk
 import minesweeper_singleplayer as ms
 import time
+import random
+import string
 
 ishost = False
 
@@ -16,43 +18,67 @@ def mqtt_init ():
     #connect
     client.connect("test.mosquitto.org", 1883, 60)
     client.loop_start()
+    
+def connect():
+    global topic_prefix
+    
+    if ishost:
+        topic_prefix = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+        conroot.clipboard_clear()
+        conroot.clipboard_append(topic_prefix)
+    else:
+        topic_prefix = topic_entry.get()
+        if len(topic_prefix) != 6:
+            return
+        
+    topic_prefix = "minesweeper545158" + topic_prefix
+    
+    if ishost:
+        conroot.destroy()
+        ms.multiplayer = True
+        ms.ishost = True
+        
+        ms.start_window()
+        ms.root.after(100, check_started_status)
+        ms.root.mainloop()
+                
 
+def check_started_status():
+    global init_data
+    global connected
+    
+    if not ms.start:
+        if not connected:
+            connected = True
+            mqtt_init()
+            
+        ms.root.after(100, check_started_status)
+    else:
+        #after game was started by host
+        
+        #disable all buttons
+        for r in ms.squares:
+            for c in r:
+                c.button.config(state="disabled")
+                
+        #read init_data from grid creation 
+        init_data = f"{ms.gridsize};"
+        for b in ms.bombs:
+            coords = f"{str(b[0])},{str(b[1])}"
+            init_data += f"{coords};"
+        init_data = init_data[:-1]
+        print(init_data)
+        
+        #next step
+        ms.root.after(100, check_message_status)
+        
+def check_message_status():
+    pass
 def start_connect_window():
     global ishost
     global conroot
-    
-    def connect():
-        global sub_topic
-        global msg_topublish
-        
-        strlen = len(topic_entry.get())
-        if not strlen >= 8:
-            print(topic_entry.get()[:4])
-            sub_topic =  topic_entry.get()[:8]
-            
-        else:
-            print(topic_entry.get()[:4])
-            sub_topic = topic_entry.get()[:strlen]
-        
-        
-        
-        if ishost:
-            conroot.destroy()
-            ms.multiplayer = True
-            ms.ishost = True
-            
-            ms.start_window()
-            while not ms.start:
-                time.sleep(.1)
-            msg_topublish = f"{ms.gridsize};"
-            for b in ms.bombs:
-                coords = f"{str(b[0])},{str(b[1])}"
-                msg_topublish += f"{coords};"
-            msg_topublish = msg_topublish[:-1]
-            print(msg_topublish)    
-            print(f"pubbed to {"minesweeperinit545158" + sub_topic}")
-        
-        mqtt_init()  
+    global topic_entry
+     
     
     def toggle_host():
         global ishost
@@ -86,10 +112,10 @@ def on_connect(client, userdata, flags, rc):
     global connected
     connected = True
     if not ishost:
-        client.subscribe("minesweeperinit545158" + sub_topic)
+        client.subscribe("minesweeper545158" + topic_prefix)
     else:
-        client.publish("minesweeperinit545158" + sub_topic, msg_topublish)
-    client.subscribe("minesweepergame545158" + sub_topic)
+        client.publish("minesweeper545158" + topic_prefix, init_data)
+    client.subscribe("minesweeper545158" + topic_prefix)
     
     
     print(f"Connected with result code {rc}")
@@ -103,7 +129,7 @@ def on_message(client, userdata, msg):
     print("okays")
     message = msg.payload.decode("utf-8")
     
-    if msg.topic == "minesweeperinit545158" + sub_topic:
+    if msg.topic == topic_prefix:
         print("war hier")
         ms.given_column_count = message.split(";")[0].split("x")[0]
         ms.given_row_count = message.split(";")[0].split("x")[1]
@@ -123,4 +149,7 @@ def on_message(client, userdata, msg):
     print(message)
 
 if __name__ == "__main__":
+    
     start_connect_window()
+    client.disconnect()
+    print("closed connection")
