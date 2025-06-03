@@ -3,7 +3,9 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
+#specific files
 test.py
+creds.crd
 
 # User-specific files
 *.rsuser
@@ -11,6 +13,8 @@ test.py
 *.user
 *.userosscache
 *.sln.docstates
+
+*.crd
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -400,4 +404,4 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-creds.crd
+
