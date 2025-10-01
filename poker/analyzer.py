@@ -84,4 +84,6 @@ def check_multiples(cards:list[list])->int:
                 maxval = update_maxval(600+ind,maxval)
             triplet = True
             maxval = update_maxval(300+ind,maxval)
+        elif multiple == 4:
+            maxval = update_maxval(700+ind,maxval)
     return maxval

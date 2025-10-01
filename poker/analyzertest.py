@@ -22,18 +22,21 @@ def random_takes():
 def check_all():
     deck = funcs.generate_deck()
     counter = 0
-    keys = funcs.keys
+    keys = funcs.keys[:]
     while keys:
         try:
             counter += 1
             random.shuffle(deck)
             hand = deck[:7]
+            
             points = round(analyzer.analyze_hand(hand))
-            ind = int(round(points/1000, 0))
+            ind = int((points-(points%100))/100)
             res = funcs.keys[ind]
+            
             if res in keys:
-                print(f"{res} funktioniert, erreichter Wert: {points} mit Hand {hand}")
+                print(f"{res} funktioniert, erreichter Wert: {points} mit Hand {hand} bei Versuch {counter}")
                 keys.remove(res)
+                
             if counter % 100000 == 0:
                 print(f"Lebenszeichen: Counter = {counter}")
 
